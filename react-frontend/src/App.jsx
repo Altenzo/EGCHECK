@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react';
 
-// Динамически берем URL бэкенда из переменных окружения Vercel (или работаем локально на 8000)
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+// Динамически берем IP того сервера, на котором открыт сайт
+const currentHost = window.location.hostname;
+const API_BASE_URL = `http://${currentHost}:8000/api`;
 
 function App() {
     const [step, setStep] = useState('upload');
