@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    restart: always
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./react-frontend
+      args:
+        - VITE_API_URL=https://твой-домен.ru/api
+    restart: always
+    ports:
+      - "5173:5173"
