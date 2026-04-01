@@ -20,8 +20,9 @@ app.add_middleware(
 # Инициализируем клиент через переменную окружения (безопасно для деплоя)
 api_key = os.environ.get("GEMINI_API_KEY")
 if not api_key:
-    # Оставляем старый для локальных тестов, если забыл прописать .env
-    api_key = "AIzaSyB1GmQ_Mqx0atR2z_usYSjaiFF6GcM59DU" 
+    # НИКОГДА не оставляй здесь реальный ключ! 
+    # После деплоя на VPS просто пропиши его в .env
+    api_key = "PLACEHOLDER_KEY_DO_NOT_COMMIT" 
 
 client = genai.Client(api_key=api_key)
 

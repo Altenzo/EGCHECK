@@ -4,8 +4,8 @@ services:
   backend:
     build: ./backend
     restart: always
-    environment:
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    env_file: 
+      - ./backend/.env
     ports:
       - "8000:8000"
 
