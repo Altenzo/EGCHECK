@@ -1,4 +1,4 @@
-google-genai
+openai
 fastapi
 uvicorn
 python-multipart
