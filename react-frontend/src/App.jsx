@@ -62,6 +62,14 @@ function App() {
             if (!res.ok) {
                 const errorText = await res.text();
                 console.error('[Frontend] Recognize failed with text:', errorText);
+                try {
+                    const errJson = JSON.parse(errorText);
+                    if (errJson.detail) throw new Error(errJson.detail);
+                } catch (e) {
+                    if (e.message !== "Unexpected token u in JSON at position 0" && e.message !== "Unexpected token 'u', \"У бесплатн\"... is not valid JSON" && !e.message.includes("JSON")) {
+                        throw e; // Reraise parsed message
+                    }
+                }
                 throw new Error(`Ошибка распознавания (Status: ${res.status})`);
             }
             
