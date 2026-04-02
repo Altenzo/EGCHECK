@@ -92,6 +92,11 @@ async def recognize_essay(files: List[UploadFile] = File(...)):
         result["images"] = raw_images_base64 # Сохраняем картинки для следующего шага
         return result
     except Exception as e:
+        error_msg = str(e).lower()
+        if "429" in error_msg or "quota" in error_msg or "limit" in error_msg or "exhausted" in error_msg:
+            custom_detail = "У бесплатного гемини OCR закончился лимит, напишите @islamchik чтобы решить трабл"
+            print(f"[Backend] OCR limit error: {custom_detail}")
+            raise HTTPException(status_code=429, detail=custom_detail)
         print(f"[Backend] OCR error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
