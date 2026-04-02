@@ -253,3 +253,11 @@ async def evaluate_essay(req: EvaluationRequest):
         return json.loads(response.choices[0].message.content)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/health")
+async def health():
+    """
+    Простейший эндпоинт, который позволяет быстро проверить,
+    что FastAPI запущен и отвечает.
+    """
+    return {"status": "ok"}
