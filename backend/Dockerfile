@@ -3,15 +3,16 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Ускоряем установку зависимостей
+# Устанавливаем зависимости
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
+# <-- Добавьте эту строку
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 # Копируем остальной код
 COPY . .
 
-# Прокидываем порт для Railway/Docker
 EXPOSE 8000
 
-# Запуск сервера uvicorn
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
