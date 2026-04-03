@@ -36,7 +36,10 @@ def encode_image(file_content):
     return base64.b64encode(file_content).decode('utf-8')
 
 # --- ШАГ 1: ПЕРВИЧНОЕ РАСПОЗНАВАНИЕ (OCR) ---
-gemini_client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+gemini_client = genai.Client(
+    api_key=os.environ.get("GEMINI_API_KEY"),
+    http_options={'base_url': 'https://api.proxyapi.ru/google'}
+)
 
 @app.post("/api/recognize")
 async def recognize_essay(files: List[UploadFile] = File(...)):
