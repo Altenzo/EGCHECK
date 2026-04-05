@@ -88,13 +88,29 @@ function CorrectionStep({ text, setText, doubts, setDoubts, onEvaluate, loading 
     const textareaRef = useRef(null);
 
     const handleDoubtClick = (doubt) => {
-        if (!textareaRef.current) return;
-        const index = text.indexOf(doubt.word);
+        if (!textareaRef.current || !doubt.word) return;
+        
+        // 1. Пытаемся найти точное совпадение
+        let index = text.indexOf(doubt.word);
+        
+        // 2. Если не нашли - ищем без учета регистра (Аа/аа)
+        if (index === -1) {
+             index = text.toLowerCase().indexOf(doubt.word.toLowerCase());
+        }
+
         if (index !== -1) {
             textareaRef.current.focus();
             textareaRef.current.setSelectionRange(index, index + doubt.word.length);
+            
+            // 3. Плавно скроллим сам сайт до редактора
             textareaRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
+    };
+
+    const toggleFixed = (index) => {
+        const newDoubts = [...doubts];
+        newDoubts[index].fixed = !newDoubts[index].fixed;
+        setDoubts(newDoubts);
     };
 
     return (
@@ -113,14 +129,22 @@ function CorrectionStep({ text, setText, doubts, setDoubts, onEvaluate, loading 
             </div>
 
             <div className="info-side glass-panel h-fit">
-                <h3 className="panel-title">🧐 Сомнения ИИ</h3>
+                <h3 className="panel-title">🧐 Сомнения ИИ (справа)</h3>
                 <div className="doubts-list">
                     {doubts.length === 0 ? (
                         <p className="empty-text">ИИ уверен на 100%</p>
                     ) : (
                         doubts.map((d, i) => (
                             <div key={i} className={`doubt-card ${d.fixed ? 'fixed' : ''}`} onClick={() => handleDoubtClick(d)}>
-                                <span className="doubt-word">{d.word}</span>
+                                <div className="doubt-header">
+                                    <span className="doubt-word">{d.word}</span>
+                                    <button 
+                                        onClick={(e) => { e.stopPropagation(); toggleFixed(i); }} 
+                                        className="fix-toggle"
+                                    >
+                                        {d.fixed ? 'Отменить' : '✅ Исправлено'}
+                                    </button>
+                                </div>
                                 <p className="doubt-reason">{d.reason}</p>
                             </div>
                         ))
@@ -142,16 +166,34 @@ function EvaluationStep({ evaluation, onRestart }) {
             </div>
 
             <div className="criteria-grid">
-                {evaluation.criteria.map((c, i) => (
-                    <div key={i} className={`criteria-card ${c.score === c.max_score ? 'score-perfect' : c.score === 0 ? 'score-zero' : 'score-partial'}`}>
-                        <div className="criteria-header">
-                            <span className="id-tag">{c.id}</span>
-                            <span className="score-tag">{c.score} / {c.max_score}</span>
+                {evaluation.criteria.map((c, i) => {
+                    const isPerfect = c.score === c.max_score;
+                    return (
+                        <div key={i} className={`criteria-card ${isPerfect ? 'score-perfect' : c.score === 0 ? 'score-zero' : 'score-partial'}`}>
+                            <div className="criteria-header">
+                                <span className="id-tag">{c.id}</span>
+                                <span className="score-tag">{c.score} / {c.max_score}</span>
+                            </div>
+                            <h4 className="criteria-name">{c.name}</h4>
+                            
+                            <div className="criteria-details">
+                                <p className="criteria-feedback">{c.feedback}</p>
+                                
+                                {!isPerfect && c.quote && (
+                                    <div className="crit-quote">
+                                        <strong>Цитата:</strong> <i>"{c.quote}"</i>
+                                    </div>
+                                )}
+                                
+                                {!isPerfect && c.recommendation && (
+                                    <div className="crit-recommendation">
+                                        <strong>💡 Совет:</strong> {c.recommendation}
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                        <h4 className="criteria-name">{c.name}</h4>
-                        <p className="criteria-feedback">{c.feedback}</p>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             <div className="support-box">
