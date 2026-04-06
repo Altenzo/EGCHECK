@@ -5,7 +5,7 @@ function UploadStep({ onFilesUploaded, loading }) {
         <div className="upload-zone">
             {!loading ? (
                 <>
-                    <input type="file" multiple onChange={onFilesUploaded} className="file-input" />
+                    <input type="file" multiple accept="image/*" onChange={onFilesUploaded} className="file-input" />
                     <div className="icon">📸</div>
                     <p className="upload-text">Загрузите фото сочинения</p>
                     <p className="upload-subtext">GPT-4o Vision проанализирует каждый штрих</p>
